@@ -1,4 +1,5 @@
 # Write your code below game_hash
+require 'pry'
 
 def game_hash
   {
@@ -128,89 +129,71 @@ def game_hash
 end
 
 # Write code here
+def players
+  game_hash[:home][:players].concat game_hash[:away][:players]
+end
+
+def find_player(name)
+  players.find do |player_info|
+    player_info[:player_name] == name
+  end
+end
+
 def num_points_scored(name)
-  game_hash.each{ |key, value|
-    value[:players].each {|player_stats|
-      if player_stats[:player_name] == name
-        return player_stats[:points]
-      end
-    }
-  }
+  find_player(name)[:points]
 end
 
 def shoe_size(name)
-  game_hash.each {|key, value|
-    value[:players].each { |player_stats|
-      if player_stats[:player_name] == name
-        return player_stats[:shoe]
-      end
-    }
-  }
+  find_player(name)[:shoe]
+end
+
+def find_team(team_name)
+  game_hash.values.find do |team|
+    team_name == team[:team_name]
+  end
 end
 
 def team_colors(team)
-  game_hash.each { |key, value|
-    if value[:team_name] == team
-      return value[:colors]
-    end
-  }
+  find_team(team)[:colors]
 end
 
 def team_names
-  teams_array = Array.new
-  game_hash.each { |key, value|
-    teams_array << value[:team_name]
-}
-  return teams_array
+  game_hash.values.reduce([]) do |teams_array, team_info|
+    teams_array << team_info[:team_name]
+  end
 end
 
 def player_numbers(team)
-  player_numbers_array = Array.new
-  game_hash.each { |key, value|
-    if value[:team_name] == team
-      value[:players].each {|player_stats|
-        player_numbers_array << player_stats[:number]
-    }
-    end
-  }
-  return player_numbers_array
+  find_team(team)[:players].reduce([]) do |numbers_arr, player_stats|
+    numbers_arr << player_stats[:number]
+  end
 end
 
 def player_stats(name)
-  game_hash.each{ |key, value| 
-    value[:players].each {|player_stats|
-      if player_stats[:player_name] == name
-        return player_stats
-      end
-    }
-  }
+  find_player(name)
 end
 
 def big_shoe_rebounds
-  biggest_shoe = 0
-  rebounds = 0
-  game_hash.each{|key, value|
-    value[:players].each{|player_stats|
-      if player_stats[:shoe] > biggest_shoe
-        biggest_shoe = player_stats[:shoe]
-        rebounds = player_stats[:rebounds]
-      end
-    }
-  }
-  rebounds
+  returned_player = players.reduce do |biggest_shoe, player_stats|
+    player_stats[:shoe] > biggest_shoe[:shoe] ? player_stats : biggest_shoe
+  end
+  returned_player[:rebounds]
 end
 
 def most_points_scored
-  most_points = 0
-  player_name = ""
-  game_hash.each{|key, value|
-    value[:players].each{|player_stats|
-      if player_stats[:points] > most_points
-        most_points = player_stats[:points]
-        player_name = player_stats[:name]
-      end
-    }
-  }
-  player_name
+  # most_points = 0
+  # player_name = ""
+  # game_hash.each{|key, value|
+  #   value[:players].each{|player_stats|
+  #     if player_stats[:points] > most_points
+  #       most_points = player_stats[:points]
+  #       player_name = player_stats[:name]
+  #     end
+  #   }
+  # }
+  # player_name
+  returned_player = players.reduce do |most_points, player_stats|
+    player_stats[:points] > most_points[:points] ? player_stats : most_points
+  end
+  returned_player[:name]
 end
-

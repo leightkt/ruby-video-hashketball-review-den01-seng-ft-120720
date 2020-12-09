@@ -197,5 +197,20 @@ def big_shoe_rebounds
       end
     }
   }
-  return rebounds
+  rebounds
 end
+
+def most_points_scored
+  most_points = 0
+  player_name = ""
+  game_hash.each{|key, value|
+    value[:players].each{|player_stats|
+      if player_stats[:points] > most_points
+        most_points = player_stats[:points]
+        player_name = player_stats[:name]
+      end
+    }
+  }
+  player_name
+end
+
